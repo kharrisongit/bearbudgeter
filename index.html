@@ -350,20 +350,27 @@
   }
   .savings-save-btn:active{opacity:0.7;}
   .payoff-method-toggle{
-    display:inline-flex;
-    gap:3px;
-    flex-shrink:0;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:6px;
+    width:100%;
+    min-width:0;
   }
   .pm-btn{
-    padding:3px 7px;
+    min-width:0;
+    width:100%;
+    min-height:42px;
+    padding:8px 6px;
     border:1px solid rgba(255,255,255,0.2);
-    border-radius:7px;
+    border-radius:10px;
     background:transparent;
-    color:rgba(255,255,255,0.65);
-    font-size:0.62rem;
-    font-weight:600;
+    color:rgba(255,255,255,0.72);
+    font-size:0.78rem;
+    line-height:1.15;
+    font-weight:700;
     cursor:pointer;
-    white-space:nowrap;
+    white-space:normal;
+    overflow-wrap:anywhere;
   }
   .pm-btn.active{
     background:rgba(255,255,255,0.22);
@@ -3434,6 +3441,20 @@ button.hero-pie-wrap-corner{border:0;background:none;padding:0;color:inherit;bor
 .check-summary-row.bonus-row{background:var(--accent-soft);border-color:var(--line);}
 .check-summary-row.bonus-row span:last-child{color:var(--accent);}
 @media(max-width:380px){.debt-hero .soft-badge{font-size:.58rem;padding:5px 7px}.debt-hero .card-heading{gap:7px}.debt-hero .eyebrow{font-size:.59rem}.paycheck-budget summary{flex-wrap:wrap}.paycheck-budget summary>span{margin-left:0}}
+
+  /* Compact, phone-first dashboard: less card chrome and no clipped controls. */
+  .strategy-card{padding:18px;}
+  .strategy-card h3{margin-right:50px;}
+  .strategy-card .strategy-sub{margin-bottom:14px;}
+  .strategy-card .method-description{font-size:.92rem;line-height:1.5;margin:14px 0 0;}
+  #cushionCascadeSettings:not([hidden]){display:block;margin-top:14px;padding:12px 12px 6px;}
+  #cushionCascadeSettings .field-row{gap:12px;align-items:center;}
+  #cushionCascadeSettings input,#cushionCascadeSettings select{max-width:48%;min-width:0;}
+  .debt-hero .debt-stats{gap:14px;}
+  .debt-hero .debt-stats strong{font-size:1.2rem;}
+  @media (min-width:700px){
+    .payoff-method-toggle{grid-template-columns:repeat(4,minmax(0,1fr));}
+  }
 </style>
 </head>
 <body>
