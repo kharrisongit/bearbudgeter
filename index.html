@@ -3459,7 +3459,7 @@ button.hero-pie-wrap-corner{border:0;background:none;padding:0;color:inherit;bor
             <div id="debtBreakdownDropdown" class="hero-pie-dropdown"></div>
           </div>
         </div>
-        <div class="modern-card strategy-card"><div class="strategy-icon" aria-hidden="true">🐾</div><h3>Your payoff playbook.</h3><p class="strategy-sub">Choose how each paycheck makes progress.</p><div class="payoff-method-toggle" role="group" aria-label="Payoff method"><button class="pm-btn" id="pmBtnAvalanche" onclick="setPayoffMethod('avalanche')">Avalanche</button><button class="pm-btn" id="pmBtnSnowball" onclick="setPayoffMethod('snowball')">Snowball</button><button class="pm-btn" id="pmBtnSquasher" onclick="setPayoffMethod('squasher')">Squasher</button></div><p id="methodDescription" class="method-description"></p></div>
+        <div class="modern-card strategy-card"><div class="strategy-icon" aria-hidden="true">🐾</div><h3>Your payoff playbook.</h3><p class="strategy-sub">Choose how each paycheck makes progress.</p><div class="payoff-method-toggle" role="group" aria-label="Payoff method"><button class="pm-btn" id="pmBtnAvalanche" onclick="setPayoffMethod('avalanche')">Avalanche</button><button class="pm-btn" id="pmBtnSnowball" onclick="setPayoffMethod('snowball')">Snowball</button><button class="pm-btn" id="pmBtnSquasher" onclick="setPayoffMethod('squasher')">Squasher</button><button class="pm-btn" id="pmBtnCushionCascade" onclick="setPayoffMethod('cushionCascade')">Cushion Cascade</button></div><p id="methodDescription" class="method-description"></p><div id="cushionCascadeSettings" class="setup-panel-wrap" hidden><div class="field-row"><label class="field-name" for="cushionAmount">Protected leftover per paycheck<small>Keep this amount out of debt payments</small></label><input type="number" id="cushionAmount" min="0" step="25" value="250" style="width:110px" onchange="cushionSettingsChanged()"></div><div class="field-row"><label class="field-name" for="cushionIntensity">Payoff intensity</label><select id="cushionIntensity" onchange="cushionSettingsChanged()"><option value="conservative">Conservative</option><option value="balanced" selected>Balanced</option><option value="aggressive">Aggressive</option></select></div><div class="field-row"><label class="field-name" for="cushionBonusMode">Bonus handling</label><select id="cushionBonusMode" onchange="cushionSettingsChanged()"><option value="retain">Keep the bonus</option><option value="split" selected>Split 50/50</option><option value="apply">Apply bonus to debt</option></select></div></div></div>
       </div>
       <div class="quick-actions"><button class="spending-summary-link" id="incomeToggleBtn" aria-expanded="false" aria-controls="incomeDropdown" onclick="toggleIncomePanel()"><svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></svg><span>Income</span></button><button class="spending-summary-link" id="budgetToggleBtn" aria-expanded="false" aria-controls="budgetDropdown" onclick="toggleBudgetPanel()"><svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 7h6m-6 4h6m-6 4h3"/></svg><span>Budget</span></button><button class="spending-summary-link" id="accountsToggleBtn" onclick="toggleDebtPanel()"><svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20M6 15h4"/></svg><span>Accounts</span></button></div>
       <div id="fundingStatus" class="funding-warning" role="status" hidden></div>
@@ -3870,7 +3870,8 @@ let paycheckOverrides = {};
 let savingsContributionOverrides = {}; // { [goalId]: { [paycheckNum]: amount } }
 let checkedPaychecks = {};
 let bonusInputOpenForPaycheck = null; // which paycheck's inline "add bonus" field is expanded
-let currentPayoffMethod = 'squasher'; // 'avalanche' or 'snowball' — set via the debt hero toggle
+let currentPayoffMethod = 'squasher'; // payoff strategy selected in the debt hero
+let cushionCascadeSettings = { cushion: 250, intensity: 'balanced', bonusMode: 'split' };
 let budgetItemOverrides = {}; // { [itemId]: { [paycheckNum]: amount } } — per-check edits to a budget line item
 let accountPaymentOverrides = {}; // { [cardId]: { [paycheckNum]: amount } } — a manually logged actual payment for that account/check, overriding the projected avalanche/snowball payment
 let extraExpenses = {}; // { [paycheckNum]: [{id, label, amount}, ...] } — one-time expenses, don't recur
@@ -4247,6 +4248,7 @@ function gatherAppState(){
     takeHome: document.getElementById('takeHome').value,
     startDate: document.getElementById('startDate').value,
     payoffMethod: currentPayoffMethod,
+    cushionCascadeSettings: {...cushionCascadeSettings},
     babyBearMode: document.getElementById('kurtisModeCheckbox').checked,
     papaBearMode: document.getElementById('papaBearModeCheckbox').checked,
     paycheckOverrides,
@@ -4595,7 +4597,14 @@ function applyBudgetState(snapshot) {
   for (const id of ['takeHome','startDate','hourlyRate','hoursPerCheck']) {
     if (state[id] !== undefined) document.getElementById(id).value = state[id];
   }
-  currentPayoffMethod = state.payoffMethod || 'squasher';
+  currentPayoffMethod = ['avalanche','snowball','squasher','cushionCascade'].includes(state.payoffMethod) ? state.payoffMethod : 'squasher';
+  cushionCascadeSettings = {...cushionCascadeSettings, ...(state.cushionCascadeSettings || {})};
+  const cushionAmountEl = document.getElementById('cushionAmount');
+  const cushionIntensityEl = document.getElementById('cushionIntensity');
+  const cushionBonusModeEl = document.getElementById('cushionBonusMode');
+  if (cushionAmountEl) cushionAmountEl.value = cushionCascadeSettings.cushion ?? 250;
+  if (cushionIntensityEl) cushionIntensityEl.value = cushionCascadeSettings.intensity || 'balanced';
+  if (cushionBonusModeEl) cushionBonusModeEl.value = cushionCascadeSettings.bonusMode || 'split';
   document.getElementById('papaBearModeCheckbox').checked = !!state.papaBearMode;
   document.getElementById('hoursHint').textContent = state.papaBearMode ? 'capped at 80 (salary — no overtime)' : 'over 80 = 1.5x overtime';
   if (state.papaBearMode) { document.getElementById('hoursPerCheck').max = '80'; enforceHoursCapIfPapaBear(); }
@@ -4861,8 +4870,22 @@ const BearBudgetEngine = (() => {
         const contributions = share(requestedSavings, Math.max(0, available - sum(fundedMin)));
         const debtBudget = available - sum(contributions);
         if (sum(contributions) < sum(requestedSavings)) warnings.push('Savings contributions reduced by $' + dollars(sum(requestedSavings) - sum(contributions)).toFixed(2) + ' to stay within this paycheck.');
-        const order = cards.map((_, i) => i).sort((a, b) => p.method === 'snowball' ? balances[a] - balances[b] || cards[b].apr - cards[a].apr : cards[b].apr - cards[a].apr || balances[a] - balances[b]);
+        const order = cards.map((_, i) => i).sort((a, b) => {
+          if (p.method === 'snowball') return balances[a] - balances[b] || cards[b].apr - cards[a].apr;
+          if (p.method === 'cushionCascade') {
+            const score = i => (Number(cards[i].apr) || 0) * 3 + Math.min(100, Number(minimums[i]) || 0) * 0.08 + ((Number(minimums[i]) || 0) / Math.max(1, balances[i])) * 120;
+            return score(b) - score(a) || balances[a] - balances[b];
+          }
+          return cards[b].apr - cards[a].apr || balances[a] - balances[b];
+        });
         const isSquasher = p.method === 'squasher';
+        const isCushionCascade = p.method === 'cushionCascade';
+        const cushionCfg = p.cushionCascade || {cushion:250,intensity:'balanced',bonusMode:'split'};
+        const intensityFactor = cushionCfg.intensity === 'conservative' ? 1.5 : cushionCfg.intensity === 'aggressive' ? 0.5 : 1;
+        const cushionHoldback = isCushionCascade ? Math.max(0, cash(cushionCfg.cushion) * intensityFactor) : 0;
+        const bonusRetainFraction = cushionCfg.bonusMode === 'retain' ? 1 : cushionCfg.bonusMode === 'apply' ? 0 : 0.5;
+        const bonusHoldback = isCushionCascade ? bonus * bonusRetainFraction : 0;
+        const strategyHoldback = Math.min(debtBudget, cushionHoldback + bonusHoldback);
         const squasherFinish = isSquasher && p.squashPaychecks?.[k] === true && sum(due) > 0;
         const largest = new Set(due.map((_, i) => i).filter(i => due[i] > 0)
           .sort((a, b) => due[b] - due[a] || a - b).slice(0, 3));
@@ -4881,6 +4904,7 @@ const BearBudgetEngine = (() => {
             const extra = share(targets.map((v, i) => overrides[cards[i].id] !== undefined ? 0 : Math.max(0, v - result[i])), pool);
             for (let i = 0; i < n; i++) result[i] += extra[i];
           } else {
+            if (isCushionCascade) pool = Math.max(0, pool - strategyHoldback);
             for (const i of order) {
               if (overrides[cards[i].id] !== undefined) continue;
               const add = Math.min(pool, due[i] - result[i]); result[i] += add; pool -= add;
@@ -4982,7 +5006,7 @@ function updateCardSetting(id, field, value) {
   calculate();
 }
 function buildPlannerInput(cards, budget) {
-  return {cards, goals: savingsGoals, method: currentPayoffMethod, startDate: document.getElementById('startDate').value,
+  return {cards, goals: savingsGoals, method: currentPayoffMethod, cushionCascade: {...cushionCascadeSettings}, startDate: document.getElementById('startDate').value,
     balanceDate: plannerSettings.balanceDate, takeHome: cleanAmount(document.getElementById('takeHome').value),
     bonusOverrides: appliedBonuses, squashPaychecks, budget, paycheckOverrides, budgetOverrides: budgetItemOverrides, extraExpenses,
     savingsOverrides: savingsContributionOverrides, paymentOverrides: accountPaymentOverrides, interestOverrides: accountInterestOverrides,
@@ -5086,15 +5110,28 @@ function updatePlannerControls() {
   updateModernDashboard();
 }
 function updatePayoffMethodExplain() {
-  for (const [method, id] of [['avalanche','pmBtnAvalanche'],['snowball','pmBtnSnowball'],['squasher','pmBtnSquasher']]) {
+  for (const [method, id] of [['avalanche','pmBtnAvalanche'],['snowball','pmBtnSnowball'],['squasher','pmBtnSquasher'],['cushionCascade','pmBtnCushionCascade']]) {
     const el = document.getElementById(id); if (el) { el.classList.toggle('active', currentPayoffMethod === method); el.setAttribute('aria-pressed', String(currentPayoffMethod === method)); }
   }
   const desc = document.getElementById('methodDescription');
-  if (desc) desc.textContent = currentPayoffMethod === 'squasher' ? 'Bonus check? Halve the three largest balances. Regular check? Halve the smaller ones. Pay minimums on the rest. Affirm and loans are included, and ranks update every check. Tap Squash on a paycheck to target the full remaining balance using available cash.' : currentPayoffMethod === 'snowball' ? 'Minimums first, then extra money goes to your smallest remaining balance.' : 'Minimums first, then extra money goes to the account with the highest APR.';
+  if (desc) desc.textContent = currentPayoffMethod === 'squasher' ? 'Bonus check? Halve the three largest balances. Regular check? Halve the smaller ones. Pay minimums on the rest. Affirm and loans are included, and ranks update every check. Tap Squash on a paycheck to target the full remaining balance using available cash.' : currentPayoffMethod === 'snowball' ? 'Minimums first, then extra money goes to your smallest remaining balance.' : currentPayoffMethod === 'cushionCascade' ? 'Protect your paycheck cushion first, then use the remaining safe surplus to target debts. Freed-up payments roll forward as accounts are cleared. Customize your cushion, intensity, and bonus handling below.' : 'Minimums first, then extra money goes to the account with the highest APR.';
+  const settings = document.getElementById('cushionCascadeSettings');
+  if (settings) settings.hidden = currentPayoffMethod !== 'cushionCascade';
 }
 function setPayoffMethod(method) {
-  if (!['avalanche','snowball','squasher'].includes(method)) return;
+  if (!['avalanche','snowball','squasher','cushionCascade'].includes(method)) return;
   currentPayoffMethod = method; calculate();
+}
+function cushionSettingsChanged() {
+  const amount = document.getElementById('cushionAmount');
+  const intensity = document.getElementById('cushionIntensity');
+  const bonusMode = document.getElementById('cushionBonusMode');
+  cushionCascadeSettings = {
+    cushion: Math.max(0, Number(amount?.value) || 0),
+    intensity: ['conservative','balanced','aggressive'].includes(intensity?.value) ? intensity.value : 'balanced',
+    bonusMode: ['retain','split','apply'].includes(bonusMode?.value) ? bonusMode.value : 'split'
+  };
+  calculate();
 }
 function toggleSquash(k) {
   if (completedPaychecks[k]) { plannerMessage('Reopen this completed paycheck before changing Squash.'); return; }
