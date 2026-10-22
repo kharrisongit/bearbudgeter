@@ -3461,6 +3461,10 @@ button.hero-pie-wrap-corner{border:0;background:none;padding:0;color:inherit;bor
 @media(min-width:700px){.app-nav{display:none!important}.app-view,.app-view[hidden]{display:block!important;visibility:visible!important;animation:none!important;margin-bottom:22px}}
 
 .settings-menu-wrap{position:relative;display:inline-flex;align-items:center}.top-settings-menu{position:absolute;right:0;top:calc(100% + 10px);width:min(300px,calc(100vw - 32px));padding:16px;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 34px rgba(0,0,0,.18);z-index:1000;color:var(--ink)}.top-settings-menu[hidden]{display:none!important}.top-settings-menu h3{margin:0 0 14px;font-size:1rem}.top-settings-option{display:flex;align-items:center;gap:9px;font-weight:750;font-size:.9rem;cursor:pointer}.top-settings-option input{width:18px;height:18px;flex:none}.top-settings-help{margin:5px 0 14px 27px;color:var(--muted);font-size:.75rem;line-height:1.4}
+
+/* Savings stays directly below the debt/playbook cards on the overview. */
+.savings-section-heading{margin:12px 0 10px;}
+#savingsHeroContainer{margin-bottom:14px;}
 </style>
 </head>
 <body>
@@ -3489,6 +3493,8 @@ button.hero-pie-wrap-corner{border:0;background:none;padding:0;color:inherit;bor
         </div>
         <div class="modern-card strategy-card"><div class="strategy-icon" aria-hidden="true">🐾</div><h3>Your payoff playbook.</h3><p class="strategy-sub">Choose how each paycheck makes progress.</p><div class="payoff-method-toggle" role="group" aria-label="Payoff method"><button class="pm-btn" id="pmBtnAvalanche" onclick="setPayoffMethod('avalanche')">Avalanche</button><button class="pm-btn" id="pmBtnSnowball" onclick="setPayoffMethod('snowball')">Snowball</button><button class="pm-btn" id="pmBtnSquasher" onclick="setPayoffMethod('squasher')">Squasher</button><button class="pm-btn" id="pmBtnCushionCascade" onclick="setPayoffMethod('cushionCascade')">Cushion Cascade</button></div><p id="methodDescription" class="method-description"></p><div id="cushionCascadeSettings" class="setup-panel-wrap" hidden><div class="field-row"><label class="field-name" for="cushionAmount">Protected leftover per paycheck<small>Keep this amount out of debt payments</small></label><input type="number" id="cushionAmount" min="0" step="25" value="250" style="width:110px" onchange="cushionSettingsChanged()"></div><div class="field-row"><label class="field-name" for="cushionIntensity">Payoff intensity</label><select id="cushionIntensity" onchange="cushionSettingsChanged()"><option value="conservative">Conservative</option><option value="balanced" selected>Balanced</option><option value="aggressive">Aggressive</option></select></div><div class="field-row"><label class="field-name" for="cushionBonusMode">Bonus handling</label><select id="cushionBonusMode" onchange="cushionSettingsChanged()"><option value="retain">Keep the bonus</option><option value="split" selected>Split 50/50</option><option value="apply">Apply bonus to debt</option></select></div></div></div>
       </div>
+      <div class="section-heading savings-section-heading"><h3>A little set aside.</h3><span class="muted-text">Your savings goals</span></div>
+      <div id="savingsHeroContainer"></div>
       <div class="quick-actions"><button class="spending-summary-link" id="incomeToggleBtn" aria-expanded="false" aria-controls="incomeDropdown" onclick="toggleIncomePanel()"><svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></svg><span>Income</span></button><button class="spending-summary-link" id="budgetToggleBtn" aria-expanded="false" aria-controls="budgetDropdown" onclick="toggleBudgetPanel()"><svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 7h6m-6 4h6m-6 4h3"/></svg><span>Budget</span></button><button class="spending-summary-link" id="accountsToggleBtn" onclick="toggleDebtPanel()"><svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20M6 15h4"/></svg><span>Accounts</span></button></div>
       <div id="fundingStatus" class="funding-warning" role="status" hidden></div>
     <div id="incomeDropdown" class="setup-panel-wrap">
@@ -3537,8 +3543,7 @@ button.hero-pie-wrap-corner{border:0;background:none;padding:0;color:inherit;bor
 
 
       <div class="dashboard-bottom"><div id="nextPaycheckPreview" class="modern-card next-paycheck-card"></div><div id="debtForecast" class="modern-card"></div></div>
-      <div class="section-heading"><h3>A little set aside.</h3><span class="muted-text">Your savings goals</span></div>
-      <div id="savingsHeroContainer"></div>
+
     </section>
     <section id="view-plan" class="app-view" aria-labelledby="paychecksHeading" hidden>
       <div class="view-heading"><div><p class="eyebrow">ONE PAYCHECK AT A TIME</p><h2 id="paychecksHeading">Your next moves.</h2><p>Add a bonus when it lands. Tap Squash when you’re ready to finish.</p></div></div>
