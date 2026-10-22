@@ -3465,6 +3465,17 @@ button.hero-pie-wrap-corner{border:0;background:none;padding:0;color:inherit;bor
 /* Savings stays directly below the debt/playbook cards on the overview. */
 .savings-section-heading{margin:12px 0 10px;}
 #savingsHeroContainer{margin-bottom:14px;}
+
+/* Keep the payoff choices compact inside the debt tracker card. */
+#debtHeroBox .strategy-card{margin-top:18px;padding:12px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.18);border-radius:14px;box-shadow:none;}
+#debtHeroBox .strategy-card .strategy-icon{display:none;}
+#debtHeroBox .strategy-card h3{font-size:1rem;margin:0 0 4px;}
+#debtHeroBox .strategy-card .strategy-sub{font-size:.78rem;margin:0 0 9px;}
+#debtHeroBox .payoff-method-toggle{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;}
+#debtHeroBox .pm-btn{min-height:32px;padding:5px 3px;font-size:.68rem;line-height:1.1;border-radius:8px;}
+#debtHeroBox .method-description{font-size:.78rem;margin:8px 0 0;line-height:1.35;}
+#debtHeroBox #cushionCascadeSettings:not([hidden]){padding:9px;margin-top:8px;}
+@media(max-width:420px){#debtHeroBox .payoff-method-toggle{grid-template-columns:repeat(2,minmax(0,1fr));}#debtHeroBox .pm-btn{font-size:.72rem;}}
 </style>
 </head>
 <body>
@@ -3489,9 +3500,10 @@ button.hero-pie-wrap-corner{border:0;background:none;padding:0;color:inherit;bor
             </div>
             <div class="debt-stats"><div><span>Projected debt-free date</span><strong id="heroDate">—</strong><div class="day-counter" id="heroDayCounter"></div><div class="paycheck-counter" id="heroPaycheckCounter"></div></div><div><span>Estimated total interest</span><strong id="heroInterest">—</strong><span class="interest-recorded">Interest recorded</span><strong id="heroInterestPaid">—</strong></div></div>
             <div id="debtBreakdownDropdown" class="hero-pie-dropdown"></div>
+            <div class="modern-card strategy-card"><div class="strategy-icon" aria-hidden="true">🐾</div><h3>Your payoff playbook.</h3><p class="strategy-sub">Choose how each paycheck makes progress.</p><div class="payoff-method-toggle" role="group" aria-label="Payoff method"><button class="pm-btn" id="pmBtnAvalanche" onclick="setPayoffMethod('avalanche')">Avalanche</button><button class="pm-btn" id="pmBtnSnowball" onclick="setPayoffMethod('snowball')">Snowball</button><button class="pm-btn" id="pmBtnSquasher" onclick="setPayoffMethod('squasher')">Squasher</button><button class="pm-btn" id="pmBtnCushionCascade" onclick="setPayoffMethod('cushionCascade')">Cushion Cascade</button></div><p id="methodDescription" class="method-description"></p><div id="cushionCascadeSettings" class="setup-panel-wrap" hidden><div class="field-row"><label class="field-name" for="cushionAmount">Protected leftover per paycheck<small>Keep this amount out of debt payments</small></label><input type="number" id="cushionAmount" min="0" step="25" value="250" style="width:110px" onchange="cushionSettingsChanged()"></div><div class="field-row"><label class="field-name" for="cushionIntensity">Payoff intensity</label><select id="cushionIntensity" onchange="cushionSettingsChanged()"><option value="conservative">Conservative</option><option value="balanced" selected>Balanced</option><option value="aggressive">Aggressive</option></select></div><div class="field-row"><label class="field-name" for="cushionBonusMode">Bonus handling</label><select id="cushionBonusMode" onchange="cushionSettingsChanged()"><option value="retain">Keep the bonus</option><option value="split" selected>Split 50/50</option><option value="apply">Apply bonus to debt</option></select></div></div></div>
           </div>
         </div>
-        <div class="modern-card strategy-card"><div class="strategy-icon" aria-hidden="true">🐾</div><h3>Your payoff playbook.</h3><p class="strategy-sub">Choose how each paycheck makes progress.</p><div class="payoff-method-toggle" role="group" aria-label="Payoff method"><button class="pm-btn" id="pmBtnAvalanche" onclick="setPayoffMethod('avalanche')">Avalanche</button><button class="pm-btn" id="pmBtnSnowball" onclick="setPayoffMethod('snowball')">Snowball</button><button class="pm-btn" id="pmBtnSquasher" onclick="setPayoffMethod('squasher')">Squasher</button><button class="pm-btn" id="pmBtnCushionCascade" onclick="setPayoffMethod('cushionCascade')">Cushion Cascade</button></div><p id="methodDescription" class="method-description"></p><div id="cushionCascadeSettings" class="setup-panel-wrap" hidden><div class="field-row"><label class="field-name" for="cushionAmount">Protected leftover per paycheck<small>Keep this amount out of debt payments</small></label><input type="number" id="cushionAmount" min="0" step="25" value="250" style="width:110px" onchange="cushionSettingsChanged()"></div><div class="field-row"><label class="field-name" for="cushionIntensity">Payoff intensity</label><select id="cushionIntensity" onchange="cushionSettingsChanged()"><option value="conservative">Conservative</option><option value="balanced" selected>Balanced</option><option value="aggressive">Aggressive</option></select></div><div class="field-row"><label class="field-name" for="cushionBonusMode">Bonus handling</label><select id="cushionBonusMode" onchange="cushionSettingsChanged()"><option value="retain">Keep the bonus</option><option value="split" selected>Split 50/50</option><option value="apply">Apply bonus to debt</option></select></div></div></div>
+        
       </div>
       <div class="section-heading savings-section-heading"><h3>A little set aside.</h3><span class="muted-text">Your savings goals</span></div>
       <div id="savingsHeroContainer"></div>
