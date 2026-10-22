@@ -3459,13 +3459,15 @@ button.hero-pie-wrap-corner{border:0;background:none;padding:0;color:inherit;bor
 /* Classic one-page layout requested by the user */
 @media(max-width:699px){.app-nav{display:none!important}.app-view,.app-view[hidden]{display:block!important;visibility:visible!important;animation:none!important;margin-bottom:16px}.view-heading{margin-bottom:12px}.overview-grid,.dashboard-bottom{grid-template-columns:minmax(0,1fr);gap:10px;margin:10px 0 14px}.modern-card{padding:14px;border-radius:16px;box-shadow:none}.strategy-card{padding:14px}.payoff-method-toggle{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;width:100%}.pm-btn{width:100%;min-width:0;min-height:38px;padding:7px 5px;font-size:.75rem;white-space:normal;overflow-wrap:anywhere}#cushionCascadeSettings:not([hidden]){display:block;margin-top:10px;padding:10px}}
 @media(min-width:700px){.app-nav{display:none!important}.app-view,.app-view[hidden]{display:block!important;visibility:visible!important;animation:none!important;margin-bottom:22px}}
+
+.settings-menu-wrap{position:relative;display:inline-flex;align-items:center}.top-settings-menu{position:absolute;right:0;top:calc(100% + 10px);width:min(300px,calc(100vw - 32px));padding:16px;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 34px rgba(0,0,0,.18);z-index:1000;color:var(--ink)}.top-settings-menu[hidden]{display:none!important}.top-settings-menu h3{margin:0 0 14px;font-size:1rem}.top-settings-option{display:flex;align-items:center;gap:9px;font-weight:750;font-size:.9rem;cursor:pointer}.top-settings-option input{width:18px;height:18px;flex:none}.top-settings-help{margin:5px 0 14px 27px;color:var(--muted);font-size:.75rem;line-height:1.4}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="app-topbar">
     <div class="app-brand"><svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="16" fill="#e9e1fc"/><circle cx="14" cy="14" r="7" fill="#7254aa"/><circle cx="34" cy="14" r="7" fill="#7254aa"/><ellipse cx="24" cy="26" rx="17" ry="15" fill="#8768bd"/><ellipse cx="24" cy="31" rx="9" ry="7" fill="#eadffd"/><circle cx="18" cy="24" r="2" fill="#302448"/><circle cx="30" cy="24" r="2" fill="#302448"/><path d="M21 29q3-3 6 0l-3 3z" fill="#302448"/><path d="M24 32v2m-3 0q3 3 6 0" fill="none" stroke="#302448" stroke-width="1.3" stroke-linecap="round"/></svg><div><h1>BearBudgeter</h1><div class="brand-caption">Small steps. Big bear energy.</div></div></div>
-    <div class="topbar-actions"><button type="button" onclick="toggleTheme()" id="themeToggleBtn" title="Switch to dark mode" aria-label="Switch color theme">🌙</button><button type="button" onclick="setAppView('den')" title="Open The Den" aria-label="Open settings in The Den"><svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3" fill="var(--card)"/><circle cx="15" cy="17" r="3" fill="var(--card)"/></svg></button></div>
+    <div class="topbar-actions"><button type="button" onclick="toggleTheme()" id="themeToggleBtn" title="Switch to dark mode" aria-label="Switch color theme">🌙</button><div class="settings-menu-wrap"><button type="button" id="settingsMenuBtn" onclick="toggleTopSettings()" aria-expanded="false" aria-controls="topSettingsMenu" title="Settings" aria-label="Settings">⚙️</button><div id="topSettingsMenu" class="top-settings-menu" hidden><h3>Personal modes</h3><label class="top-settings-option"><input type="checkbox" id="kurtisModeTop" onchange="syncTopPersonalMode('baby',this.checked)"> Baby Bear Mode</label><p class="top-settings-help">Loads your saved personal setup for this session.</p><label class="top-settings-option"><input type="checkbox" id="papaBearModeTop" onchange="syncTopPersonalMode('papa',this.checked)"> Papa Bear Mode</label><p class="top-settings-help">Applies Papa Bear's salary and fixed-bill setup.</p></div></div></div>
   </header>
   <nav class="app-nav" aria-label="Main navigation"><button type="button" id="nav-home" class="active" aria-current="page" onclick="setAppView('home')"><svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span>Overview</span></button><button type="button" id="nav-plan" class="" onclick="setAppView('plan')"><svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 11h18m-13 5h3m4 0h1"/></svg><span>Paychecks</span></button><button type="button" id="nav-accounts" class="" onclick="setAppView('accounts')"><svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20M6 15h4"/></svg><span>Accounts</span></button><button type="button" id="nav-den" class="" onclick="setAppView('den')"><svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10H3zM9 20v-7h6v7"/></svg><span>The Den</span></button></nav>
   <div id="plannerNotice" class="planner-notice" role="status" hidden></div>
@@ -4694,6 +4696,28 @@ const PAPA_BEAR_DATA = {
   ],
 };
 
+function toggleTopSettings(force) {
+  const menu = document.getElementById('topSettingsMenu');
+  const btn = document.getElementById('settingsMenuBtn');
+  if (!menu) return;
+  const open = typeof force === 'boolean' ? force : menu.hidden;
+  menu.hidden = !open;
+  if (btn) btn.setAttribute('aria-expanded', String(open));
+  if (open) {
+    document.getElementById('kurtisModeTop').checked = !!document.getElementById('kurtisModeCheckbox')?.checked;
+    document.getElementById('papaBearModeTop').checked = !!document.getElementById('papaBearModeCheckbox')?.checked;
+  }
+}
+function syncTopPersonalMode(mode, checked) {
+  if (mode === 'baby') toggleKurtisMode(checked);
+  if (mode === 'papa') togglePapaBearMode(checked);
+  document.getElementById('kurtisModeTop').checked = !!document.getElementById('kurtisModeCheckbox')?.checked;
+  document.getElementById('papaBearModeTop').checked = !!document.getElementById('papaBearModeCheckbox')?.checked;
+}
+document.addEventListener('click', function(event) {
+  const wrap = document.querySelector('.settings-menu-wrap');
+  if (wrap && !wrap.contains(event.target)) toggleTopSettings(false);
+});
 function togglePapaBearMode(checked){
   const hint = document.getElementById('hoursHint');
   const hoursEl = document.getElementById('hoursPerCheck');
